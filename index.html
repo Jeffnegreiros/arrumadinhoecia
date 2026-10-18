@@ -1,0 +1,307 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#17251e">
+  <title>Arrumadinho e Cia | Gestão</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand">
+      <img class="brand-icon" src="img.jpg" alt="Logo Arrumadinho e Cia">
+      <div>
+        <strong>Arrumadinho e Cia</strong>
+        <small>Sistema de gestão</small>
+      </div>
+    </div>
+
+    <nav>
+      <button class="nav-btn active" data-page="dashboard">🏠 Visão geral</button>
+      <button class="nav-btn" data-page="mesas">🪑 Mesas e pedidos</button>
+      <button class="nav-btn" data-page="produtos">🍛 Produtos</button>
+      <button class="nav-btn" data-page="estoque">📦 Estoque</button>
+      <button class="nav-btn" data-page="despesas">💸 Despesas</button>
+      <button class="nav-btn" data-page="relatorios">📊 Relatórios</button>
+      <button class="nav-btn" data-page="historico">📋 Histórico</button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <span class="status-dot"></span> Dados salvos neste aparelho
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div>
+        <h1 id="page-title">Visão geral</h1>
+        <p id="today-label"></p>
+      </div>
+      <button class="btn btn-primary" id="quick-order">+ Novo pedido</button>
+    </header>
+
+    <section id="dashboard" class="page active">
+      <div class="stats-grid">
+        <article class="stat-card">
+          <span>Vendas de hoje</span>
+          <strong id="dash-sales">R$ 0,00</strong>
+          <small>Pedidos pagos</small>
+        </article>
+        <article class="stat-card">
+          <span>Despesas de hoje</span>
+          <strong id="dash-expenses">R$ 0,00</strong>
+          <small>Gastos registrados</small>
+        </article>
+        <article class="stat-card">
+          <span>Resultado estimado</span>
+          <strong id="dash-profit">R$ 0,00</strong>
+          <small>Vendas menos despesas</small>
+        </article>
+        <article class="stat-card">
+          <span>Mesas ocupadas</span>
+          <strong id="dash-tables">0/15</strong>
+          <small>Pedidos em andamento</small>
+        </article>
+      </div>
+
+      <div class="section-heading">
+        <div>
+          <h2>Suas mesas</h2>
+          <p>Selecione uma mesa para lançar um pedido.</p>
+        </div>
+        <button class="btn btn-light" data-goto="mesas">Ver todas</button>
+      </div>
+      <div id="dashboard-tables" class="tables-grid"></div>
+
+      <div class="panel">
+        <div class="section-heading">
+          <div>
+            <h2>Movimento recente</h2>
+            <p>Últimos pedidos finalizados.</p>
+          </div>
+        </div>
+        <div id="dashboard-recent"></div>
+      </div>
+    </section>
+
+    <section id="mesas" class="page">
+      <div class="section-heading">
+        <div>
+          <h2>Controle de mesas</h2>
+          <p>Abra uma mesa e registre os itens consumidos.</p>
+        </div>
+        <div class="order-actions">
+          <button id="new-pickup-order" class="btn btn-orange">Retirada</button>
+          <button id="new-delivery-order" class="btn btn-orange">Entrega</button>
+          <span class="pill">15 mesas</span>
+        </div>
+      </div>
+      <div id="all-tables" class="tables-grid"></div>
+
+      <div class="panel">
+        <div class="section-heading">
+          <div>
+            <h2>Pedidos de retirada e entrega</h2>
+            <p>Pedidos em andamento que não ocupam uma mesa.</p>
+          </div>
+        </div>
+        <div id="counter-orders-list"></div>
+      </div>
+
+      <div id="order-panel" class="panel hidden">
+        <div class="section-heading">
+          <div>
+            <h2 id="order-title">Mesa</h2>
+            <p>Adicione produtos ao pedido aberto.</p>
+          </div>
+          <button id="close-order-panel" class="btn btn-light">Fechar</button>
+        </div>
+
+        <form id="add-item-form" class="form-grid">
+          <label class="field field-wide">
+            Produto
+            <select id="order-product" required></select>
+          </label>
+          <label class="field">
+            Quantidade
+            <input id="order-quantity" type="number" min="1" step="1" value="1" required>
+          </label>
+          <button class="btn btn-primary align-end" type="submit">Adicionar item</button>
+        </form>
+        <div id="order-no-products" class="empty hidden" role="status">
+          Cadastre um item primeiro para adicionar ao pedido.
+        </div>
+
+        <div id="order-customer-fields" class="form-grid customer-fields hidden">
+          <label class="field">
+            Nome do cliente
+            <input id="order-customer-name" maxlength="100" autocomplete="name">
+          </label>
+          <label id="delivery-address-field" class="field field-wide hidden">
+            Endereço de entrega
+            <input id="delivery-address" maxlength="200" autocomplete="street-address">
+          </label>
+        </div>
+
+        <div id="order-items"></div>
+
+        <div class="order-total">
+          <span>Total do pedido</span>
+          <strong id="order-total">R$ 0,00</strong>
+        </div>
+
+        <div class="form-grid payment-row">
+          <label class="field">
+            Forma de pagamento
+            <select id="payment-method">
+              <option value="Pix">Pix</option>
+              <option value="Dinheiro">Dinheiro</option>
+              <option value="Cartão">Cartão</option>
+            </select>
+          </label>
+          <button id="finish-order" class="btn btn-success align-end">Finalizar e receber</button>
+          <button id="cancel-order" class="btn btn-danger align-end">Cancelar pedido</button>
+        </div>
+        <p id="order-hint" class="hint">Finalize o pedido para registrar o pagamento e liberar a mesa.</p>
+      </div>
+    </section>
+
+    <section id="produtos" class="page">
+      <div class="section-heading">
+        <div>
+          <h2>Cadastro de produtos</h2>
+          <p>Gerencie pratos, bebidas e preços de venda.</p>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>Cadastrar produto</h3>
+        <form id="product-form" class="form-grid">
+          <label class="field field-wide">Nome do produto
+            <input id="product-name" maxlength="80" placeholder="Ex.: Arrumadinho completo" required>
+          </label>
+          <label class="field">Preço de venda (R$)
+            <input id="product-price" type="number" min="0.01" step="0.01" required>
+          </label>
+          <button class="btn btn-primary align-end" type="submit">Cadastrar produto</button>
+        </form>
+      </div>
+      <div class="panel">
+        <h3>Produtos cadastrados</h3>
+        <div id="products-list"></div>
+      </div>
+    </section>
+
+    <section id="estoque" class="page">
+      <div class="section-heading">
+        <div>
+          <h2>Controle de estoque</h2>
+          <p>Registre reposições e acompanhe as quantidades disponíveis.</p>
+        </div>
+      </div>
+      <div class="panel">
+        <h3>Registrar entrada de estoque</h3>
+        <form id="stock-form" class="form-grid">
+          <label class="field field-wide">Produto
+            <select id="stock-product" required></select>
+          </label>
+          <label class="field">Quantidade recebida
+            <input id="stock-quantity" type="number" min="1" step="1" required>
+          </label>
+          <button class="btn btn-primary align-end" type="submit">Registrar entrada</button>
+        </form>
+      </div>
+      <div class="panel">
+        <h3>Posição atual do estoque</h3>
+        <div id="stock-list"></div>
+      </div>
+    </section>
+
+    <section id="despesas" class="page">
+      <div class="section-heading">
+        <div>
+          <h2>Controle de despesas</h2>
+          <p>Registre os gastos do seu negócio.</p>
+        </div>
+      </div>
+      <div class="panel">
+        <h3>Nova despesa</h3>
+        <form id="expense-form" class="form-grid">
+          <label class="field field-wide">Descrição
+            <input id="expense-description" maxlength="120" placeholder="Ex.: Compra de carne" required>
+          </label>
+          <label class="field">Categoria
+            <select id="expense-category">
+              <option>Ingredientes e compras</option>
+              <option>Bebidas</option>
+              <option>Gás e energia</option>
+              <option>Água</option>
+              <option>Aluguel</option>
+              <option>Transporte</option>
+              <option>Outros</option>
+            </select>
+          </label>
+          <label class="field">Valor (R$)
+            <input id="expense-amount" type="number" min="0.01" step="0.01" required>
+          </label>
+          <label class="field">Data
+            <input id="expense-date" type="date" required>
+          </label>
+          <button class="btn btn-primary align-end" type="submit">Salvar despesa</button>
+        </form>
+      </div>
+      <div class="panel">
+        <h3>Despesas registradas</h3>
+        <div id="expenses-list"></div>
+      </div>
+    </section>
+
+    <section id="relatorios" class="page">
+      <div class="section-heading">
+        <div>
+          <h2>Relatórios financeiros</h2>
+          <p>Consulte os resultados por dia ou por mês.</p>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="form-grid">
+          <label class="field">Tipo de relatório
+            <select id="report-type">
+              <option value="day">Diário</option>
+              <option value="month">Mensal</option>
+            </select>
+          </label>
+          <label class="field">Data de referência
+            <input id="report-date" type="date" required>
+          </label>
+          <button id="generate-report" class="btn btn-primary align-end">Gerar relatório</button>
+          <button id="print-report" class="btn btn-light align-end">Imprimir / PDF</button>
+        </div>
+      </div>
+      <div id="report-results"></div>
+    </section>
+
+    <section id="historico" class="page">
+      <div class="section-heading">
+        <div>
+          <h2>Histórico de pedidos</h2>
+          <p>Pesquise pedidos já finalizados.</p>
+        </div>
+      </div>
+      <div class="panel">
+        <label class="field">Filtrar por data
+          <input id="history-date" type="date">
+        </label>
+        <div id="history-list"></div>
+      </div>
+    </section>
+
+    <footer>Meu Arrumadinho · Gestão simples para o seu negócio</footer>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="script.js"></script>
+</body>
+</html>
